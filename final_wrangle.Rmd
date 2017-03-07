@@ -1,0 +1,71 @@
+---
+title: "final_wrangle"
+author: "Riku Turkki"
+date: "3/6/2017"
+output: html_document
+---
+
+
+## Description of the data set
+
+As a toy data, I utilize the STUDENT ALCOHOL CONSUMPTION Data Set from [the UCI Machine Learning Repository](https://archive.ics.uci.edu/ml/datasets/STUDENT+ALCOHOL+CONSUMPTION). In this project, I'll concentrate only to the data collected from female students participating to math course.
+
+## Import and data wrangling
+
+I start by reading the *student-mat* data set from a local csv file.
+
+```{r, echo=TRUE, message=FALSE, warning=FALSE}
+library(tidyverse)
+library(magrittr)
+
+(data <- read_delim("student-mat.csv",";"))
+
+```
+
+As can be seen above, the whole data set contains 33 variables and 395 observations. To continue, I select 11 variables and only those rows that describes female students. 
+
+
+```{r, echo=TRUE, message=FALSE, warning=FALSE}
+
+(data <- data %>%
+   filter(sex == "F") %>%
+   dplyr::select(age, address, Medu, Fedu, studytime, schoolsup, activities, internet, goout, Walc, Dalc, G3)) 
+  
+```
+
+Finally, my data set comprise 208 students with following 12 variables:
+
+* age - student's age (numeric: from 15 to 22) 
+
+* address - student's home address type (binary: 'U' - urban or 'R' - rural) 
+
+* Medu - mother's education (numeric: 0 - none, 1 - primary education (4th grade), 2 - 5th to 9th grade, 3 - secondary education or 4 - 
+higher education) 
+
+* Fedu - father's education (numeric: 0 - none, 1 - primary education (4th grade), 2 - 5th to 9th grade, 3 - secondary education or 4 - 
+higher education) 
+
+* studytime - weekly study time (numeric: 1 - <2 hours, 2 - 2 to 5 hours, 3 - 5 to 10 hours, or 4 - >10 hours) 
+
+* schoolsup - extra educational support (binary: yes or no) 
+
+* activities - extra-curricular activities (binary: yes or no) 
+
+* internet - Internet access at home (binary: yes or no) 
+
+* goout - going out with friends (numeric: from 1 - very low to 5 - very high) 
+
+* Dalc - workday alcohol consumption (numeric: from 1 - very low to 5 - very high) 
+
+* Walc - weekend alcohol consumption (numeric: from 1 - very low to 5 - very high) 
+
+* G3 - final grade (numeric: from 0 to 20, output target) 
+
+
+
+Saving the wrangled data. 
+
+```{r, echo=TRUE, message=FALSE, warning=FALSE}
+saveRDS(data, "my_data.rds")
+```
+

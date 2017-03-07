@@ -1,0 +1,36 @@
+---
+title: "IODS final project"
+author: "Riku Turkki"
+date: "3/6/2017"
+output: 
+  html_document:
+    theme: cosmo
+    toc: true
+    toc_depth: 2
+    fig_caption: true
+    fig_width: 6
+    fig_height: 4
+    code_folding: hide
+    df_print: tibble
+---
+
+contact: [email](mailto:riku.turkki@helsinki.fi)
+
+# Final project
+
+This is the final course project for *Introduction to Open Data Science* MOOC organized in spring 2017. 
+
+## Abstract
+
+
+```{r child = "final_wrangle.Rmd"}
+```
+
+Loading the data..
+
+```{r, echo=TRUE, message=FALSE}
+data <- readRDS("my_data.rds")
+```
+
+
+
