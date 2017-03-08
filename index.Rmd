@@ -8,29 +8,149 @@ output:
     toc: true
     toc_depth: 2
     fig_caption: true
-    fig_width: 6
-    fig_height: 4
+    fig_width: 10
+    fig_height: 6
     code_folding: hide
     df_print: tibble
 ---
 
-contact: [email](mailto:riku.turkki@helsinki.fi)
+contact: [riku.turkki@helsinki.fi](mailto:riku.turkki@helsinki.fi)
 
 # Final project
 
 This is the final course project for *Introduction to Open Data Science* MOOC organized in spring 2017. 
 
-## Abstract
+# Abstract
+Girls dring too. In order to investigate whether female students' alcohol consumption has an assosiation with final math grades, I explore a student alcohol consumption data set. For analysis, I'll utilize different visualizations and statistical modeling. In addition, I'll try to indicate what other factors might have an association with girls alcohol use in the filtered data. Obtained results indicate that there's no strong connection between drinking habits and final grades. Female students going out more ofter with their friends were found to have higher tendency to drink more alcohol than those who didn't go out as much OR 1.6 (CI95% 1.2 - 2.3, p = 0.001).
 
+# Specific esearch questions
 
-```{r child = "final_wrangle.Rmd"}
-```
+1. Is there any association between female students' final grade in math and alcohol consumption?
 
-Loading the data..
+2. Is there any association between female students' alcohol consumption and other selected variables? 
+
+# Description of the data set
+
+I use the STUDENT ALCOHOL CONSUMPTION Data Set from [the UCI Machine Learning Repository](https://archive.ics.uci.edu/ml/datasets/STUDENT+ALCOHOL+CONSUMPTION).
+
+The data set comprise information of 208 female students with following 8 variables:
+
+* age - student's age (numeric: from 15 to 22) 
+
+* Medu - mother's education (numeric: 0 - none, 1 - primary education (4th grade), 2 - 5th to 9th grade, 3 - secondary education or 4 - 
+higher education) 
+
+* Fedu - father's education (numeric: 0 - none, 1 - primary education (4th grade), 2 - 5th to 9th grade, 3 - secondary education or 4 - 
+higher education) 
+
+* studytime - weekly study time (numeric: 1 - <2 hours, 2 - 2 to 5 hours, 3 - 5 to 10 hours, or 4 - >10 hours) 
+
+* goout - going out with friends (numeric: from 1 - very low to 5 - very high) 
+
+* Dalc - workday alcohol consumption (numeric: from 1 - very low to 5 - very high) 
+
+* Walc - weekend alcohol consumption (numeric: from 1 - very low to 5 - very high) 
+
+* G3 - final grade (numeric: from 0 to 20, output target) 
+
+TODO: This particular data set is publicly available and it's often used in learning r-programming and modelling. 
+
+Loading the data.. (Link to the data wrangling script: https://github.com/riturkki/IODS-final/blob/master/final_wrangle.Rmd)
 
 ```{r, echo=TRUE, message=FALSE}
 data <- readRDS("my_data.rds")
 ```
 
+# First glance
 
+Let's take a first look to the data set by visualising it with pairs-plot:
+```{r, echo=TRUE, message=FALSE, warning=FALSE}
+library(tidyverse)
+library(GGally)
+library(modelr)
+library(vcd)  
+
+set.seed(11)
+
+myfn <- function(data, mapping, ...){
+  p <- ggplot(data = data, mapping = mapping) + 
+    geom_jitter(width = 0.1, height = 0.1, size=.5, alpha = 1 / 3) + 
+    geom_smooth(fill="gray", color="blue", ...)
+  p
+}
+
+data %>%
+  ggpairs(lower = list(continuous = myfn),
+          upper = list(continuous = wrap("cor", size = 3))) +
+  theme_classic(base_size = 8)
+
+```
+
+The first thing one notice from the pairs-plot is that most of the lines are almost horisontal, indicating lack of correlation between variables. However, after looking at the plot for a while one can notice couple hints of covariation. Parents educational levels seem to be positively correlated (r=0.62) and study time seems to increase, lightly, according students age (r=0.13). Regarding alcohol consumption, the strongest correlation is seen between variables describing consumption during weekend and work days (r=0.52). Additionally, variable describing how much a student goes out with her friends weakly correlates with alcohol consumption during weekends (r=0.27).
+
+# Answering the first research question
+
+Let's inspect closer only the 3 most interesting variables *Walc*, *Dalc*, and *G3* regaring the first reseach question.
+```{r, echo=TRUE, message=FALSE}
+data %>%
+  ggplot( aes(x = Walc , y = Dalc)) + 
+  geom_tile(na.rm = TRUE, aes(fill = G3^2)) + 
+  geom_jitter(width = 0.5, height = 0.5, alpha = 1/5, col = "white",  shape = 21, stroke = 1, aes(size = G3), show.legend = FALSE) + 
+  theme_classic()
+```
+
+The figure above doesn't reveal any obvious or unexpected patterns in the data. The plot, however, shows that drinking during working days is clearly less frequent than drinking alcohol during weekends. Lighter blue color in the plot indicates higher grade and darker lower. Most of the lower grades are located in bottom left corner of the plot, but so are majority of students as well. 
+
+In orded to further study the association between alcohol consumption and math grade let's fit a linear model to the data. Let's also inspect the effect size of the two varialbles.
+```{r, echo=TRUE, message=FALSE}
+mod <- lm(G3 ~ Walc + Dalc, data = data)
+summary(mod)
+OR <- coef(mod) %>% exp
+CI <- confint(mod) %>% exp
+cbind(OR, CI)
+```
+
+Based on the R-squared statistics, the linear model explains only about 1% of the final grade. Furthermore, the fit is not statistically significant, meaning that weekend and work day alcohol consumption are not alone enough to explain the final grade.
+
+Seems that the alcohol consumption does not explain the final grade, but let's continue the analysis by investigating wheter high use of alcohol would have a link with not getting through the course i.e. getting 0 points in the final test. So now we ask: 'does drinking lead to failing in math course'.  To do this, I'll define two more variables *high_use* = (Walc + Dalc) > 3 and *no_points* = G3 == 0. To evaluate the assumption, let's againg inspect the effect size etc.
+
+```{r, echo=TRUE, message=FALSE}
+data <- data %>%
+  mutate(high_use = (Walc + Dalc) > 3) %>%
+  mutate(no_points = G3 == 0)
+
+mod <- glm(no_points ~ high_use, data = data, family = binomial)
+summary(mod)
+OR <- coef(mod) %>% exp
+CI <- confint(mod, level=0.95) %>% exp
+cbind( OR, CI )
+
+```
+
+The analysis shows that there's no significant association between gaining no points and higher alcohol use. However, now the p-value (0.08) is lower than in the previous analysis . Interestingly the observed (not significant) association between high use and gaining no points seems to be protective. 
+
+# Answering the second research question
+
+To continue with the second research question, let's now divide the data set into separate training (70%) and test sets (30%). After this, we can fit a regression model to predict high use of alcohol (as defined above) based on the samples available in the training set and then later on, test the hypothesis in a separate test set. Let's do a random 70% - 30% division for the sets and evaluate the model like we did earlier.
+```{r, echo=TRUE, message=FALSE}
+
+set <- resample_partition(data, c(test = 0.3, train = 0.7))
+mod <- glm(high_use ~ age + Medu + Fedu + studytime + goout + G3, data = set$train, family = binomial)
+summary(mod)
+OR <- coef(mod) %>% exp
+CI <- confint(mod, level=0.95) %>% exp
+cbind( OR, CI )
+```
+As only significant (p = 0.004) variable, *goout* seems to have a positive effect (beta = 0.5 / OR = 1.6) to higher alcohol consumption. Next, let's next inspect how well this model performs in classification of the independent test samples:
+```{r, echo=TRUE, message=FALSE}
+preds <- predict(mod,newdata = set$test$data)
+(cmat <- table(high_use = set$test$data$high_use, prediction = preds > 0))
+OR <- oddsratio(cmat)
+summary(OR)
+cbind( coef(mod) %>% exp, confint(mod, level=0.95) %>% exp )
+```
+As can be seen from the confusion matrix above, the prediction accuracy is not very good, however, it's significant (p = 0.01). As seen already in training, *goout* has the largest effect size 1.6 (CI95% 1.2 - 2.3) also in the test set. Interestingly, mothers and fathers educational levels have opposing effect: higher mothers educational level is protective for high alcohol use whereas higher fathers educational level has possitive association. Additionally, time used for studying seems to have protective effect of 0.7 (CI95% 0.4 - 1.1) for higher alcohol consumption.
+
+# Conclusions and discussion
+I have studied effect female students' drinking habits to final math grade and other variables. Fist of all, my analysis suggests that there's no direct linear association between alocohol consumption and the grade. However, there was a weak evidence that higher alcohol consumption might be protective for getting 0 point in the final grade. This will require further studies to confirm. In addition, those female students that reported going out more with theri friends, were in higher risk of drinking more OR = 1.6 (CI95% 1.2 - 2.3, p = 0.001). Furthermore, the analysis suggested that mothers and fathers educational levels might have opposing effect to girls drinking: higher mothers educational level was found to be protective for high alcohol use whereas higher fathers educational level had positive effect. This question should also be addresed in future studies.
 

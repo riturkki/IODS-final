@@ -123,18 +123,66 @@ $(document).ready(function () {
 </div>
 
 
-<div id="description-of-the-data-set" class="section level2">
-<h2>Description of the data set</h2>
-<p>Reading the <em>trees</em> data set from an online csv-file.</p>
+<p>contact: <a href="mailto:riku.turkki@helsinki.fi">riku.turkki@helsinki.fi</a></p>
+<div id="import-and-data-wrangling" class="section level3">
+<h3>Import and data wrangling</h3>
+<p>I start by reading the <em>student-mat</em> data set from a local csv file.</p>
 <pre class="r"><code>library(tidyverse)
 library(magrittr)
-trees &lt;- read_csv(&quot;https://vincentarelbundock.github.io/Rdatasets/csv/datasets/trees.csv&quot;)</code></pre>
-<p>The variables are saved in US metrics: inches, feet, and cubic feet. First I transform the variable values into IS compatible formats and remove the index column (X1) from the data.</p>
-<pre class="r"><code>trees &lt;- trees %&gt;%
-  select(-X1) %&gt;%
-  transform(Girth = Girth * 2.54) %&gt;%
-  transform(Height = Height * 12 * 2.54) %&gt;%
-  transform(Volume = Volume * 0.0283168)</code></pre>
+
+(data &lt;- read_delim(&quot;student-mat.csv&quot;,&quot;;&quot;))</code></pre>
+<pre><code>## # A tibble: 395 × 33
+##    school   sex   age address famsize Pstatus  Medu  Fedu     Mjob
+##     &lt;chr&gt; &lt;chr&gt; &lt;int&gt;   &lt;chr&gt;   &lt;chr&gt;   &lt;chr&gt; &lt;int&gt; &lt;int&gt;    &lt;chr&gt;
+## 1      GP     F    18       U     GT3       A     4     4  at_home
+## 2      GP     F    17       U     GT3       T     1     1  at_home
+## 3      GP     F    15       U     LE3       T     1     1  at_home
+## 4      GP     F    15       U     GT3       T     4     2   health
+## 5      GP     F    16       U     GT3       T     3     3    other
+## 6      GP     M    16       U     LE3       T     4     3 services
+## 7      GP     M    16       U     LE3       T     2     2    other
+## 8      GP     F    17       U     GT3       A     4     4    other
+## 9      GP     M    15       U     LE3       A     3     2 services
+## 10     GP     M    15       U     GT3       T     3     4    other
+## # ... with 385 more rows, and 24 more variables: Fjob &lt;chr&gt;, reason &lt;chr&gt;,
+## #   guardian &lt;chr&gt;, traveltime &lt;int&gt;, studytime &lt;int&gt;, failures &lt;int&gt;,
+## #   schoolsup &lt;chr&gt;, famsup &lt;chr&gt;, paid &lt;chr&gt;, activities &lt;chr&gt;,
+## #   nursery &lt;chr&gt;, higher &lt;chr&gt;, internet &lt;chr&gt;, romantic &lt;chr&gt;,
+## #   famrel &lt;int&gt;, freetime &lt;int&gt;, goout &lt;int&gt;, Dalc &lt;int&gt;, Walc &lt;int&gt;,
+## #   health &lt;int&gt;, absences &lt;int&gt;, G1 &lt;int&gt;, G2 &lt;int&gt;, G3 &lt;int&gt;</code></pre>
+<p>As can be seen above, the whole data set contains 33 variables and 395 observations. To continue, I select 11 variables and only those rows that describes female students.</p>
+<pre class="r"><code>(data &lt;- data %&gt;%
+   filter(sex == &quot;F&quot;) %&gt;%
+   dplyr::select(age, Medu, Fedu, studytime, goout, Walc, Dalc, G3)) </code></pre>
+<pre><code>## # A tibble: 208 × 8
+##      age  Medu  Fedu studytime goout  Walc  Dalc    G3
+##    &lt;int&gt; &lt;int&gt; &lt;int&gt;     &lt;int&gt; &lt;int&gt; &lt;int&gt; &lt;int&gt; &lt;int&gt;
+## 1     18     4     4         2     4     1     1     6
+## 2     17     1     1         2     3     1     1     6
+## 3     15     1     1         2     2     3     2    10
+## 4     15     4     2         3     2     1     1    15
+## 5     16     3     3         2     2     2     1    10
+## 6     17     4     4         2     4     1     1     6
+## 7     15     4     4         2     3     2     1     9
+## 8     15     2     1         3     2     1     1    12
+## 9     16     4     4         1     4     2     1    14
+## 10    16     4     4         3     3     2     1    14
+## # ... with 198 more rows</code></pre>
+<p>Finally, my data set comprise 208 students with following 8 variables:</p>
+<ul>
+<li><p>age - student’s age (numeric: from 15 to 22)</p></li>
+<li><p>Medu - mother’s education (numeric: 0 - none, 1 - primary education (4th grade), 2 - 5th to 9th grade, 3 - secondary education or 4 - higher education)</p></li>
+<li><p>Fedu - father’s education (numeric: 0 - none, 1 - primary education (4th grade), 2 - 5th to 9th grade, 3 - secondary education or 4 - higher education)</p></li>
+<li><p>studytime - weekly study time (numeric: 1 - &lt;2 hours, 2 - 2 to 5 hours, 3 - 5 to 10 hours, or 4 - &gt;10 hours)</p></li>
+<li><p>goout - going out with friends (numeric: from 1 - very low to 5 - very high)</p></li>
+<li><p>Dalc - workday alcohol consumption (numeric: from 1 - very low to 5 - very high)</p></li>
+<li><p>Walc - weekend alcohol consumption (numeric: from 1 - very low to 5 - very high)</p></li>
+<li><p>G3 - final grade (numeric: from 0 to 20, output target)</p></li>
+</ul>
+</div>
+<div id="saving-the-wrangled-data." class="section level3">
+<h3>Saving the wrangled data.</h3>
+<pre class="r"><code>saveRDS(data, &quot;my_data.rds&quot;)</code></pre>
 </div>
 
 
