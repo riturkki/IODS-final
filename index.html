@@ -170,7 +170,7 @@ $(document).ready(function () {
 </div>
 <div id="description-of-the-data-set" class="section level1">
 <h1>Description of the data set</h1>
-<p>I use the STUDENT ALCOHOL CONSUMPTION Data Set from <a href="https://archive.ics.uci.edu/ml/datasets/STUDENT+ALCOHOL+CONSUMPTION">the UCI Machine Learning Repository</a>.</p>
+<p>I use the STUDENT ALCOHOL CONSUMPTION Data Set from <a href="https://archive.ics.uci.edu/ml/datasets/STUDENT+ALCOHOL+CONSUMPTION">the UCI Machine Learning Repository</a>. Only a part of the variables are used in this project. (Link to the data wrangling script: <a href="https://github.com/riturkki/IODS-final/blob/master/final_wrangle.Rmd" class="uri">https://github.com/riturkki/IODS-final/blob/master/final_wrangle.Rmd</a>)</p>
 <p>The data set comprise information of 208 female students with following 8 variables:</p>
 <ul>
 <li><p>age - student’s age (numeric: from 15 to 22)</p></li>
@@ -182,8 +182,8 @@ $(document).ready(function () {
 <li><p>Walc - weekend alcohol consumption (numeric: from 1 - very low to 5 - very high)</p></li>
 <li><p>G3 - final grade (numeric: from 0 to 20, output target)</p></li>
 </ul>
-<p>TODO: This particular data set is publicly available and it’s often used in learning r-programming and modelling.</p>
-<p>Loading the data.. (Link to the data wrangling script: <a href="https://github.com/riturkki/IODS-final/blob/master/final_wrangle.Rmd" class="uri">https://github.com/riturkki/IODS-final/blob/master/final_wrangle.Rmd</a>)</p>
+<p>This particular data set is publicly available and it’s often used in learning r-programming and modelling.</p>
+<p>Loading the data..</p>
 <pre class="r"><code>data &lt;- readRDS(&quot;my_data.rds&quot;)</code></pre>
 </div>
 <div id="first-glance" class="section level1">
@@ -332,7 +332,7 @@ cbind( OR, CI )</code></pre>
 ## studytime   0.4382724 0.238949783   0.7512124
 ## goout       1.3816812 0.978682901   1.9752348
 ## G3          1.0515920 0.963416466   1.1566965</code></pre>
-<p>As only significant (p = 0.004) variable, <em>goout</em> seems to have a positive effect (beta = 0.5 / OR = 1.6) to higher alcohol consumption. Next, let’s next inspect how well this model performs in classification of the independent test samples:</p>
+<p>As only significant (p = 0.004) variable, <em>goout</em> seems to have a positive effect (beta = 0.5 / OR = 1.6) to higher alcohol consumption. Next, let’s inspect how well this model performs in classification of the independent test samples:</p>
 <pre class="r"><code>preds &lt;- predict(mod,newdata = set$test$data)
 (cmat &lt;- table(high_use = set$test$data$high_use, prediction = preds &gt; 0))</code></pre>
 <pre><code>##         prediction
@@ -361,7 +361,7 @@ summary(OR)</code></pre>
 </div>
 <div id="conclusions-and-discussion" class="section level1">
 <h1>Conclusions and discussion</h1>
-<p>I have studied effect female students’ drinking habits to final math grade and other variables. Fist of all, my analysis suggests that there’s no direct linear association between alocohol consumption and the grade. However, there was a weak evidence that higher alcohol consumption might be protective for getting 0 point in the final grade. This will require further studies to confirm. In addition, those female students that reported going out more with theri friends, were in higher risk of drinking more OR = 1.6 (CI95% 1.2 - 2.3, p = 0.001). Furthermore, the analysis suggested that mothers and fathers educational levels might have opposing effect to girls drinking: higher mothers educational level was found to be protective for high alcohol use whereas higher fathers educational level had positive effect. This question should also be addresed in future studies.</p>
+<p>I have studied the effect of female students’ drinking habits to final math grade and other variables. Fist of all, my analysis suggests that there’s no direct linear association between alocohol consumption and the grade. However, there was a weak evidence that higher alcohol consumption might be protective for getting 0 point in the final grade. This will require further studies to confirm. In addition, those female students that reported going out more with their friends, were in higher risk of drinking more OR = 1.6 (CI95% 1.2 - 2.3, p = 0.001). Furthermore, the analysis suggested that mothers and fathers educational levels might have opposing effect to girls drinking: higher mothers educational level was found to be protective for high alcohol use whereas higher fathers educational level had positive effect. This question should also be addresed in future studies.</p>
 </div>
 
 

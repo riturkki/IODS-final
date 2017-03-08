@@ -21,7 +21,7 @@ contact: [riku.turkki@helsinki.fi](mailto:riku.turkki@helsinki.fi)
 This is the final course project for *Introduction to Open Data Science* MOOC organized in spring 2017. 
 
 # Abstract
-Girls dring too. In order to investigate whether female students' alcohol consumption has an assosiation with final math grades, I explore a student alcohol consumption data set. For analysis, I'll utilize different visualizations and statistical modeling. In addition, I'll try to indicate what other factors might have an association with girls alcohol use in the filtered data. Obtained results indicate that there's no strong connection between drinking habits and final grades. Female students going out more ofter with their friends were found to have higher tendency to drink more alcohol than those who didn't go out as much OR 1.6 (CI95% 1.2 - 2.3, p = 0.001).
+Girls dring too. In order to investigate whether female students' alcohol consumption has an assosiation with final math grades, I explore a student alcohol consumption data set. For analysis, I'll utilize different visualizations and statistical modeling. In addition, I'll try to indicate what other factors might have an association with girls alcohol use in the filtered data. Obtained results indicate that there's no strong connection between drinking habits and final grades. Female students going out more ofter with their friends were found to have higher tendency to drink more alcohol than those who didn't go out as much OR 1.6 (CI95% 1.2 - 2.3, p = 0.001). 
 
 # Specific esearch questions
 
@@ -31,7 +31,7 @@ Girls dring too. In order to investigate whether female students' alcohol consum
 
 # Description of the data set
 
-I use the STUDENT ALCOHOL CONSUMPTION Data Set from [the UCI Machine Learning Repository](https://archive.ics.uci.edu/ml/datasets/STUDENT+ALCOHOL+CONSUMPTION).
+I use the STUDENT ALCOHOL CONSUMPTION Data Set from [the UCI Machine Learning Repository](https://archive.ics.uci.edu/ml/datasets/STUDENT+ALCOHOL+CONSUMPTION). Only a part of the variables are used in this project. (Link to the data wrangling script: https://github.com/riturkki/IODS-final/blob/master/final_wrangle.Rmd)
 
 The data set comprise information of 208 female students with following 8 variables:
 
@@ -53,9 +53,9 @@ higher education)
 
 * G3 - final grade (numeric: from 0 to 20, output target) 
 
-TODO: This particular data set is publicly available and it's often used in learning r-programming and modelling. 
+This particular data set is publicly available and it's often used in learning r-programming and modelling. 
 
-Loading the data.. (Link to the data wrangling script: https://github.com/riturkki/IODS-final/blob/master/final_wrangle.Rmd)
+Loading the data.. 
 
 ```{r, echo=TRUE, message=FALSE}
 data <- readRDS("my_data.rds")
@@ -141,7 +141,7 @@ OR <- coef(mod) %>% exp
 CI <- confint(mod, level=0.95) %>% exp
 cbind( OR, CI )
 ```
-As only significant (p = 0.004) variable, *goout* seems to have a positive effect (beta = 0.5 / OR = 1.6) to higher alcohol consumption. Next, let's next inspect how well this model performs in classification of the independent test samples:
+As only significant (p = 0.004) variable, *goout* seems to have a positive effect (beta = 0.5 / OR = 1.6) to higher alcohol consumption. Next, let's inspect how well this model performs in classification of the independent test samples:
 ```{r, echo=TRUE, message=FALSE}
 preds <- predict(mod,newdata = set$test$data)
 (cmat <- table(high_use = set$test$data$high_use, prediction = preds > 0))
@@ -152,5 +152,5 @@ cbind( coef(mod) %>% exp, confint(mod, level=0.95) %>% exp )
 As can be seen from the confusion matrix above, the prediction accuracy is not very good, however, it's significant (p = 0.01). As seen already in training, *goout* has the largest effect size 1.6 (CI95% 1.2 - 2.3) also in the test set. Interestingly, mothers and fathers educational levels have opposing effect: higher mothers educational level is protective for high alcohol use whereas higher fathers educational level has possitive association. Additionally, time used for studying seems to have protective effect of 0.7 (CI95% 0.4 - 1.1) for higher alcohol consumption.
 
 # Conclusions and discussion
-I have studied effect female students' drinking habits to final math grade and other variables. Fist of all, my analysis suggests that there's no direct linear association between alocohol consumption and the grade. However, there was a weak evidence that higher alcohol consumption might be protective for getting 0 point in the final grade. This will require further studies to confirm. In addition, those female students that reported going out more with theri friends, were in higher risk of drinking more OR = 1.6 (CI95% 1.2 - 2.3, p = 0.001). Furthermore, the analysis suggested that mothers and fathers educational levels might have opposing effect to girls drinking: higher mothers educational level was found to be protective for high alcohol use whereas higher fathers educational level had positive effect. This question should also be addresed in future studies.
+I have studied the effect of female students' drinking habits to final math grade and other variables. Fist of all, my analysis suggests that there's no direct linear association between alocohol consumption and the grade. However, there was a weak evidence that higher alcohol consumption might be protective for getting 0 point in the final grade. This will require further studies to confirm. In addition, those female students that reported going out more with their friends, were in higher risk of drinking more OR = 1.6 (CI95% 1.2 - 2.3, p = 0.001). Furthermore, the analysis suggested that mothers and fathers educational levels might have opposing effect to girls drinking: higher mothers educational level was found to be protective for high alcohol use whereas higher fathers educational level had positive effect. This question should also be addresed in future studies.
 
